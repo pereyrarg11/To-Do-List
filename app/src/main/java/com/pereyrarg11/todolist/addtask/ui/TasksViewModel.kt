@@ -1,9 +1,10 @@
 package com.pereyrarg11.todolist.addtask.ui
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pereyrarg11.todolist.addtask.ui.model.TaskModel
 import javax.inject.Inject
 
 class TasksViewModel @Inject constructor() : ViewModel() {
@@ -11,16 +12,22 @@ class TasksViewModel @Inject constructor() : ViewModel() {
     private val _isDialogVisible = MutableLiveData<Boolean>()
     val isDialogVisible: LiveData<Boolean> = _isDialogVisible
 
+    private val _taskList = mutableStateListOf<TaskModel>()
+    val taskList: List<TaskModel> = _taskList
+
     fun closeDialog() {
         _isDialogVisible.value = false
     }
 
     fun createNewTask(taskTitle: String) {
-        Log.d("ToDoList", taskTitle)
         closeDialog()
+        _taskList.add(TaskModel(title = taskTitle))
     }
 
     fun showDialog() {
         _isDialogVisible.value = true
+    }
+
+    fun onTaskSelected(entity: TaskModel) {
     }
 }

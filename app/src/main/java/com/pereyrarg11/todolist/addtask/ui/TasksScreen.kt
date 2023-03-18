@@ -2,6 +2,8 @@ package com.pereyrarg11.todolist.addtask.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.pereyrarg11.todolist.addtask.ui.model.TaskModel
 
 @Composable
 fun TasksScreen(viewModel: TasksViewModel) {
@@ -35,6 +38,7 @@ fun TasksScreen(viewModel: TasksViewModel) {
                 viewModel.createNewTask(it)
             })
         FabDialog(modifier = Modifier.align(Alignment.BottomEnd), viewModel)
+        TaskColumn(viewModel = viewModel)
     }
 }
 
@@ -47,6 +51,46 @@ fun FabDialog(modifier: Modifier, viewModel: TasksViewModel) {
         modifier = modifier.padding(16.dp)
     ) {
         Icon(Icons.Filled.Add, contentDescription = "add")
+    }
+}
+
+@Composable
+fun TaskColumn(viewModel: TasksViewModel) {
+    val taskList: List<TaskModel> = viewModel.taskList
+    LazyColumn {
+        items(taskList, key = {
+            it.id
+        }) { entity ->
+            TaskRow(entity = entity, viewModel = viewModel)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaskRow(entity: TaskModel, viewModel: TasksViewModel) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp,
+            pressedElevation = 2.dp,
+            focusedElevation = 4.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = entity.title, modifier = Modifier.weight(1f))
+            Checkbox(
+                checked = entity.selected,
+                onCheckedChange = { viewModel.onTaskSelected(entity) }
+            )
+        }
     }
 }
 
@@ -78,7 +122,10 @@ fun AddTasksDialog(isVisible: Boolean, onDismiss: () -> Unit, onSubmit: (String)
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(
-                    onClick = { onSubmit(taskTitle) },
+                    onClick = {
+                        onSubmit(taskTitle)
+                        taskTitle = ""
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "Guardar")
