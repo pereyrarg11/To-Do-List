@@ -29,5 +29,9 @@ class TasksViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onTaskSelected(entity: TaskModel) {
+        val index = _taskList.indexOf(entity)
+        _taskList[index] = _taskList[index].let {
+            it.copy(selected = !it.selected)
+        }
     }
 }
