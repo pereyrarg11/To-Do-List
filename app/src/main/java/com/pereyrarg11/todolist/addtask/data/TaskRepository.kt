@@ -30,4 +30,8 @@ class TaskRepository @Inject constructor(
             )
         )
     }
+
+    suspend fun update(model: TaskModel) {
+        taskDao.updateTask(TaskEntity(model.id, model.title, model.selected))
+    }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pereyrarg11.todolist.addtask.domain.AddTaskUseCase
 import com.pereyrarg11.todolist.addtask.domain.GetTaskListUseCase
+import com.pereyrarg11.todolist.addtask.domain.UpdateTaskUseCase
 import com.pereyrarg11.todolist.addtask.ui.TasksUiState.*
 import com.pereyrarg11.todolist.addtask.ui.model.TaskModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
     getTaskListUseCase: GetTaskListUseCase
 ) : ViewModel() {
 
@@ -46,7 +48,10 @@ class TasksViewModel @Inject constructor(
         _isDialogVisible.value = true
     }
 
-    fun onTaskSelected(entity: TaskModel) {
+    fun onTaskSelected(model: TaskModel) {
+        viewModelScope.launch {
+            updateTaskUseCase(model.copy(selected = !model.selected))
+        }
     }
 
     fun removeItem(entity: TaskModel) {
