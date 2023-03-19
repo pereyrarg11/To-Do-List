@@ -22,16 +22,18 @@ class TaskRepository @Inject constructor(
     }
 
     suspend fun add(model: TaskModel) {
-        taskDao.registerTask(
-            TaskEntity(
-                id = model.id,
-                title = model.title,
-                selected = model.selected
-            )
-        )
+        taskDao.registerTask(model.toEntity())
     }
 
     suspend fun update(model: TaskModel) {
-        taskDao.updateTask(TaskEntity(model.id, model.title, model.selected))
+        taskDao.updateTask(model.toEntity())
     }
+
+    suspend fun delete(model: TaskModel) {
+        taskDao.deleteTask(model.toEntity())
+    }
+}
+
+fun TaskModel.toEntity(): TaskEntity {
+    return TaskEntity(id = this.id, title = this.title, selected = this.selected)
 }

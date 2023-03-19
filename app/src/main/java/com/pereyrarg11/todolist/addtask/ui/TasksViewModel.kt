@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pereyrarg11.todolist.addtask.domain.AddTaskUseCase
+import com.pereyrarg11.todolist.addtask.domain.DeleteTaskUseCase
 import com.pereyrarg11.todolist.addtask.domain.GetTaskListUseCase
 import com.pereyrarg11.todolist.addtask.domain.UpdateTaskUseCase
 import com.pereyrarg11.todolist.addtask.ui.TasksUiState.*
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class TasksViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
     getTaskListUseCase: GetTaskListUseCase
 ) : ViewModel() {
 
@@ -54,6 +56,9 @@ class TasksViewModel @Inject constructor(
         }
     }
 
-    fun removeItem(entity: TaskModel) {
+    fun removeItem(model: TaskModel) {
+        viewModelScope.launch {
+            deleteTaskUseCase(model)
+        }
     }
 }
