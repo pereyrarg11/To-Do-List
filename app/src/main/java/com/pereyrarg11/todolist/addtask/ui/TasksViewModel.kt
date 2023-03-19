@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pereyrarg11.todolist.addtask.domain.AddTaskUseCase
+import com.pereyrarg11.todolist.addtask.domain.InsertTaskUseCase
 import com.pereyrarg11.todolist.addtask.domain.DeleteTaskUseCase
 import com.pereyrarg11.todolist.addtask.domain.GetTaskListUseCase
 import com.pereyrarg11.todolist.addtask.domain.UpdateTaskUseCase
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    private val addTaskUseCase: AddTaskUseCase,
+    private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     getTaskListUseCase: GetTaskListUseCase
@@ -42,7 +42,7 @@ class TasksViewModel @Inject constructor(
     fun createNewTask(taskTitle: String) {
         closeDialog()
         viewModelScope.launch {
-            addTaskUseCase(TaskModel(title = taskTitle))
+            insertTaskUseCase(TaskModel(title = taskTitle))
         }
     }
 
@@ -52,7 +52,7 @@ class TasksViewModel @Inject constructor(
 
     fun onTaskSelected(model: TaskModel) {
         viewModelScope.launch {
-            updateTaskUseCase(model.copy(selected = !model.selected))
+            updateTaskUseCase(model.copy(isSelected = !model.isSelected))
         }
     }
 

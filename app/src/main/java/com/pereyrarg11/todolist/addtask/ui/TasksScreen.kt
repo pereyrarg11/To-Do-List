@@ -112,7 +112,7 @@ fun TaskRow(entity: TaskModel, viewModel: TasksViewModel) {
         ) {
             Text(text = entity.title, modifier = Modifier.weight(1f))
             Checkbox(
-                checked = entity.selected,
+                checked = entity.isSelected,
                 onCheckedChange = { viewModel.onTaskSelected(entity) }
             )
         }

@@ -16,13 +16,13 @@ class TaskRepository @Inject constructor(
             TaskModel(
                 entity.id,
                 entity.title,
-                entity.selected
+                entity.isSelected
             )
         }
     }
 
-    suspend fun add(model: TaskModel) {
-        taskDao.registerTask(model.toEntity())
+    suspend fun insert(model: TaskModel) {
+        taskDao.insertTask(model.toEntity())
     }
 
     suspend fun update(model: TaskModel) {
@@ -35,5 +35,5 @@ class TaskRepository @Inject constructor(
 }
 
 fun TaskModel.toEntity(): TaskEntity {
-    return TaskEntity(id = this.id, title = this.title, selected = this.selected)
+    return TaskEntity(id = this.id, title = this.title, isSelected = this.isSelected)
 }

@@ -10,7 +10,7 @@ interface TaskDao {
     fun getAllTask(): Flow<List<TaskEntity>>
 
     @Insert
-    suspend fun registerTask(entity: TaskEntity)
+    suspend fun insertTask(entity: TaskEntity)
 
     @Update
     suspend fun updateTask(entity: TaskEntity)

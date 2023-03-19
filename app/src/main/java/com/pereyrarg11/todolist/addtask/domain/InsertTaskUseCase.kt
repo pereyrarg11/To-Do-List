@@ -4,11 +4,11 @@ import com.pereyrarg11.todolist.addtask.data.TaskRepository
 import com.pereyrarg11.todolist.addtask.ui.model.TaskModel
 import javax.inject.Inject
 
-class AddTaskUseCase @Inject constructor(
+class InsertTaskUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {
 
     suspend operator fun invoke(model: TaskModel) {
-        repository.add(model)
+        repository.insert(model)
     }
 }
