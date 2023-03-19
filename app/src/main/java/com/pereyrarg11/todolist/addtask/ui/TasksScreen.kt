@@ -8,39 +8,58 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.pereyrarg11.todolist.addtask.ui.model.TaskModel
 
 @Composable
 fun TasksScreen(viewModel: TasksViewModel) {
     val isDialogVisible: Boolean by viewModel.isDialogVisible.observeAsState(initial = false)
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
+    val lifeCycle = LocalLifecycleOwner.current.lifecycle
+    val uiState by produceState<TasksUiState>(
+        initialValue = TasksUiState.Loading,
+        key1 = lifeCycle,
+        key2 = viewModel
     ) {
-        AddTasksDialog(
-            isVisible = isDialogVisible,
-            onDismiss = {
-                viewModel.closeDialog()
-            },
-            onSubmit = {
-                viewModel.createNewTask(it)
-            })
-        FabDialog(modifier = Modifier.align(Alignment.BottomEnd), viewModel)
-        TaskColumn(viewModel = viewModel)
+        lifeCycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            viewModel.uiState.collect { value = it }
+        }
+    }
+
+    when(uiState){
+        is TasksUiState.Error -> {}
+        TasksUiState.Loading -> {}
+        is TasksUiState.Success -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                AddTasksDialog(
+                    isVisible = isDialogVisible,
+                    onDismiss = {
+                        viewModel.closeDialog()
+                    },
+                    onSubmit = {
+                        viewModel.createNewTask(it)
+                    })
+                FabDialog(modifier = Modifier.align(Alignment.BottomEnd), viewModel)
+                TaskColumn(
+                    taskList = (uiState as TasksUiState.Success).taskList,
+                    viewModel = viewModel
+                )
+            }
+        }
     }
 }
 
@@ -57,8 +76,7 @@ fun FabDialog(modifier: Modifier, viewModel: TasksViewModel) {
 }
 
 @Composable
-fun TaskColumn(viewModel: TasksViewModel) {
-    val taskList: List<TaskModel> = viewModel.taskList
+fun TaskColumn(taskList: List<TaskModel>, viewModel: TasksViewModel) {
     LazyColumn {
         items(taskList, key = {
             it.id
@@ -94,7 +112,7 @@ fun TaskRow(entity: TaskModel, viewModel: TasksViewModel) {
         ) {
             Text(text = entity.title, modifier = Modifier.weight(1f))
             Checkbox(
-                checked = entity.selected,
+                checked = entity.isSelected,
                 onCheckedChange = { viewModel.onTaskSelected(entity) }
             )
         }
